@@ -18,4 +18,4 @@ except requests.RequestException as e:
     print("Request error:", e)
 except KeyError as e:
     print("JSON key not found:", e)
-
+print("API test completed successfully!")

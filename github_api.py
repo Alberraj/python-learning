@@ -1,6 +1,5 @@
 import requests
 
-
 BASE_URL = "https://api.github.com"
 TIMEOUT = 10
 
@@ -8,11 +7,6 @@ TIMEOUT = 10
 def get_github_api():
     try:
         response = requests.get(BASE_URL, timeout=TIMEOUT)
-
-        if response.status_code == 429:
-            print("Rate limit exceeded. Please try again later.")
-            return None
-
         response.raise_for_status()
         return response.json()
 
@@ -37,7 +31,7 @@ def get_user(username):
             return None
 
         if response.status_code == 429:
-            print("Rate limit exceeded. Please try again later.")
+            print("Rate limit exceeded.")
             return None
 
         response.raise_for_status()
@@ -46,7 +40,7 @@ def get_user(username):
     except requests.Timeout:
         print("Request timed out.")
     except requests.ConnectionError:
-        print("Connection error. Check your internet connection.")
+        print("Connection error.")
     except requests.RequestException as e:
         print("Request error:", e)
 
@@ -64,7 +58,7 @@ def get_repository(owner, repo):
             return None
 
         if response.status_code == 429:
-            print("Rate limit exceeded. Please try again later.")
+            print("Rate limit exceeded.")
             return None
 
         response.raise_for_status()
@@ -73,26 +67,32 @@ def get_repository(owner, repo):
     except requests.Timeout:
         print("Request timed out.")
     except requests.ConnectionError:
-        print("Connection error. Check your internet connection.")
+        print("Connection error.")
     except requests.RequestException as e:
         print("Request error:", e)
 
     return None
 
 
-if __name__ == "__main__":
-    username = input("Enter GitHub username: ").strip().lstrip("@")
+def search_users(query):
+    url = f"{BASE_URL}/search/users"
+    params = {"q": query}
 
-    if not username:
-        print("Username cannot be empty.")
-    else:
-        user = get_user(username)
+    try:
+        response = requests.get(url, params=params, timeout=TIMEOUT)
 
-        if user:
-            print("\n--- GitHub Profile ---")
-            print("Username:", user.get("login"))
-            print("Name:", user.get("name"))
-            print("Public repos:", user.get("public_repos"))
-            print("Followers:", user.get("followers"))
-            print("Following:", user.get("following"))
-            print("Profile:", user.get("html_url"))
+        if response.status_code == 429:
+            print("Rate limit exceeded.")
+            return None
+
+        response.raise_for_status()
+        return response.json().get("items", [])
+
+    except requests.Timeout:
+        print("Request timed out.")
+    except requests.ConnectionError:
+        print("Connection error.")
+    except requests.RequestException as e:
+        print("Request error:", e)
+
+    return None

@@ -1,4 +1,4 @@
-from github_api import get_github_api, get_user, get_repository
+from github_api import get_github_api, get_user, get_repository, search_users
 
 
 def check_api():
@@ -53,6 +53,29 @@ def find_repository():
         print("Repository:", repository.get("html_url"))
 
 
+def search_github_users():
+    query = input("\nEnter search username: ").strip()
+
+    if not query:
+        print("Search query cannot be empty.")
+        return
+
+    users = search_users(query)
+
+    if users is None:
+        return
+
+    if not users:
+        print("No users found.")
+        return
+
+    print("\n--- Search Results ---")
+
+    for number, user in enumerate(users[:10], start=1):
+        print(f"{number}. {user.get('login')}")
+        print(f"   Profile: {user.get('html_url')}")
+
+
 def main():
     while True:
         print("\n========================")
@@ -61,7 +84,8 @@ def main():
         print("1. Check API")
         print("2. Find GitHub User")
         print("3. Find Repository")
-        print("4. Exit")
+        print("4. Search GitHub Users")
+        print("5. Exit")
 
         choice = input("\nChoose an option: ").strip()
 
@@ -72,10 +96,12 @@ def main():
         elif choice == "3":
             find_repository()
         elif choice == "4":
+            search_github_users()
+        elif choice == "5":
             print("Goodbye!")
             break
         else:
-            print("Invalid option. Choose 1, 2, 3, or 4.")
+            print("Invalid option. Choose 1, 2, 3, 4, or 5.")
 
 
 if __name__ == "__main__":
